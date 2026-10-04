@@ -155,8 +155,8 @@ useEffect(() => {
   const [inputPrice, setInputPrice] = useState<number>(0);
 
   // Игроки
-  const [p1, setP1] = useState({ name: 'AMIR', money: 150, inv: [] as InventoryItem[] });
-const [p2, setP2] = useState({ name: 'BROTHER', money: 150, inv: [] as InventoryItem[] });
+  const [p1, setP1] = useState({ name: 'Игрок 1', money: 150, inv: [] as InventoryItem[] });
+const [p2, setP2] = useState({ name: 'Игрок 2', money: 150, inv: [] as InventoryItem[] });
 
   // Остатки в магазине
   const [marketStock, setMarketStock] = useState<Record<string, number>>(() => {
@@ -317,7 +317,7 @@ askingPrice: inputPrice,
             className="border border-zinc-700 bg-zinc-950 hover:bg-white hover:text-black transition-all p-6 text-left"
           >
             <div className="text-xs text-zinc-500">СЛОТ 01</div>
-            <div className="text-xl font-black mt-1">ИГРОК: AMIR</div>
+            <div className="text-xl font-black mt-1">ИГРОК: Игрок 1</div>
           </button>
 
           <button
@@ -325,7 +325,7 @@ askingPrice: inputPrice,
             className="border border-zinc-700 bg-zinc-950 hover:bg-white hover:text-black transition-all p-6 text-left"
           >
             <div className="text-xs text-zinc-500">СЛОТ 02</div>
-            <div className="text-xl font-black mt-1">ИГРОК: BROTHER</div>
+            <div className="text-xl font-black mt-1">ИГРОК: Игрок 2</div>
           </button>
         </div>
       </div>
@@ -348,7 +348,7 @@ askingPrice: inputPrice,
           <OpiumCross className="w-5 h-5 text-white animate-pulse"/>
           <div>
             <span className="text-lg font-black tracking-widest text-white block">RESELL_90S ONLINE</span>
-            <span className="text-[9px] text-emerald-400">АККАУНТ: {role === 'P1' ? 'AMIR (P1)' : 'BROTHER (P2)'}</span>
+            <span className="text-[9px] text-emerald-400">АККАУНТ: {role === 'P1' ? 'Игрок 1 (P1)' : 'Игрок 2 (P2)'}</span>
           </div>
         </div>
 
