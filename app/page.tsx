@@ -182,10 +182,11 @@ const [p2, setP2] = useState({ name: 'Игрок 2', money: 150, inv: [] as Inve
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'game_state' },
-        (payload) => {
-          if (payload.new && payload.new.data) {
-            if (payload.new.data.p1) setP1(payload.new.data.p1);
-            if (payload.new.data.p2) setP2(payload.new.data.p2);
+(payload) => {
+          const newData = (payload.new as any)?.data;
+          if (newData) {
+            if (newData.p1) setP1(newData.p1);
+            if (newData.p2) setP2(newData.p2);
           }
         }
       )
