@@ -137,19 +137,7 @@ export default function GameOnline() {
   const [timeLeft, setTimeLeft] = useState(1200);
   const [gameActive, setGameActive] = useState(false);
   const [activeTab, setActiveTab] = useState<'datybae' | 'itachi' | 'arigato'>('datybae');
-useEffect(() => {
-  const channel = supabase.channel('resell-game-room');
 
-  channel
-    .on('broadcast', { event: 'slot_action' }, (payload) => {
-      console.log('Событие второго игрока:', payload.payload);
-    })
-    .subscribe();
-
-  return () => {
-    supabase.removeChannel(channel);
-  };
-}, []);
   // Модалка выставления цен
   const [selectedItemToSell, setSelectedItemToSell] = useState<InventoryItem | null>(null);
   const [inputPrice, setInputPrice] = useState<number>(0);
@@ -157,7 +145,56 @@ useEffect(() => {
   // Игроки
   const [p1, setP1] = useState({ name: 'Игрок 1', money: 150, inv: [] as InventoryItem[] });
 const [p2, setP2] = useState({ name: 'Игрок 2', money: 150, inv: [] as InventoryItem[] });
+// Функция сохранения состояния в Supabase
+  const saveGameState = async (updatedP1 = p1, updatedP2 = p2) => {
+    try {
+      const { error } = await supabase
+        .from('game_state')
+        .upsert({
+          id: 'default_room',
+          data: { p1: updatedP1, p2: updatedP2 },
+          updated_at: new Date().toISOString(),
+        });
 
+      if (error) console.error('Ошибка сохранения в Supabase:', error.message);
+    } catch (err) {
+      console.error('Ошибка сети/Supabase:', err);
+    }
+  };
+  useEffect(() => {
+    const loadInitialState = async () => {
+      const { data } = await supabase
+        .from('game_state')
+        .select('data')
+        .eq('id', 'default_room')
+        .single();
+
+      if (data?.data) {
+        if (data.data.p1) setP1(data.data.p1);
+        if (data.data.p2) setP2(data.data.p2);
+      }
+    };
+
+    loadInitialState();
+
+    const channel = supabase
+      .channel('game_sync')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'game_state' },
+        (payload) => {
+          if (payload.new && payload.new.data) {
+            if (payload.new.data.p1) setP1(payload.new.data.p1);
+            if (payload.new.data.p2) setP2(payload.new.data.p2);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
   // Остатки в магазине
   const [marketStock, setMarketStock] = useState<Record<string, number>>(() => {
     const initial: Record<string, number> = {};
